@@ -1,7 +1,5 @@
 'use client';
 import React from 'react';
-
-
 //3 TanStack Libraries!!!
 import {
   ColumnDef,
@@ -15,17 +13,16 @@ import {
 } from '@tanstack/react-table';
 import {
   keepPreviousData,
-  QueryClient,
-  QueryClientProvider,
   useInfiniteQuery,
 } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
 import { fetchData, Person, PersonApiResponse } from './data-maker';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const fetchSize = 50;
 
-function App() {
+export default function UsersTable() {
   //we need a reference to the scrolling element for logic down below
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -39,38 +36,24 @@ function App() {
         size: 60,
       },
       {
-        accessorKey: 'firstName',
+        accessorKey: 'uuid',
         cell: info => info.getValue(),
+        size: 300,
       },
       {
-        accessorFn: row => row.lastName,
-        id: 'lastName',
+        accessorFn: row => row.fullName,
+        id: 'fullName',
         cell: info => info.getValue(),
-        header: () => <span>Last Name</span>,
+        header: () => <span>Full Name</span>,
       },
       {
-        accessorKey: 'age',
-        header: () => 'Age',
-        size: 50,
+        accessorKey: 'address',
+        header: () => 'Address',
+        size: 300,
       },
       {
-        accessorKey: 'visits',
-        header: () => <span>Visits</span>,
-        size: 50,
-      },
-      {
-        accessorKey: 'status',
-        header: 'Status',
-      },
-      {
-        accessorKey: 'progress',
-        header: 'Profile Progress',
-        size: 80,
-      },
-      {
-        accessorKey: 'createdAt',
-        header: 'Created At',
-        cell: info => info.getValue<Date>().toLocaleString(),
+        accessorKey: 'phone',
+        header: 'Phone',
         size: 200,
       },
     ],
@@ -172,126 +155,85 @@ function App() {
   }
 
   return (
-    <div className="app">
-      {process.env.NODE_ENV === 'development' ? (
-        <p>
-          <strong>Notice:</strong> You are currently running React in
-          development mode. Virtualized rendering performance will be slightly
-          degraded until this application is built for production.
-        </p>
-      ) : null}
+    <div className="w-full">
       ({flatData.length} of {totalDBRowCount} rows fetched)
-      <div
-        className="container"
-        onScroll={e => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
-        ref={tableContainerRef}
-        style={{
-          overflow: 'auto', //our scrollable table container
-          position: 'relative', //needed for sticky header
-          height: '600px', //should be a fixed height
-        }}
-      >
-        {/* Even though we're still using sematic table tags, we must use CSS grid and flexbox for dynamic row heights */}
-        <table style={{ display: 'grid' }}>
-          <thead
-            style={{
-              display: 'grid',
-              position: 'sticky',
-              top: 0,
-              zIndex: 1,
-            }}
+      <div className="flex items-center py-4 gap-3">
+        <div
+          className="rounded-md border w-full"
+          onScroll={e => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
+          ref={tableContainerRef}
+          style={{
+            overflow: 'auto', //our scrollable table container
+            position: 'relative', //needed for sticky header
+            height: '600px', //should be a fixed height
+          }}
+        >
+          <table
+            className='grid'
           >
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr
-                key={headerGroup.id}
-                style={{ display: 'flex', width: '100%' }}
-              >
-                {headerGroup.headers.map(header => {
-                  return (
-                    <th
-                      key={header.id}
-                      style={{
-                        display: 'flex',
-                        width: header.getSize(),
-                      }}
-                    >
-                      <div
-                        {...{
-                          className: header.column.getCanSort()
-                            ? 'cursor-pointer select-none'
-                            : '',
-                          onClick: header.column.getToggleSortingHandler(),
-                        }}
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {{
-                          asc: ' 🔼',
-                          desc: ' 🔽',
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
-          </thead>
-          <tbody
-            style={{
-              display: 'grid',
-              height: `${rowVirtualizer.getTotalSize()}px`, //tells scrollbar how big the table is
-              position: 'relative', //needed for absolute positioning of rows
-            }}
-          >
-            {rowVirtualizer.getVirtualItems().map(virtualRow => {
-              const row = rows[virtualRow.index] as Row<Person>;
-              return (
-                <tr
-                  data-index={virtualRow.index} //needed for dynamic row height measurement
-                  ref={node => rowVirtualizer.measureElement(node)} //measure dynamic row height
-                  key={row.id}
-                  style={{
-                    display: 'flex',
-                    position: 'absolute',
-                    transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
-                    width: '100%',
-                  }}
+            <TableHeader
+              className='sticky grid top-0 z-10 bg-background '
+            >
+              {table.getHeaderGroups().map(headerGroup => (
+                <TableRow
+                  key={headerGroup.id}
+                  className='flex w-full'
                 >
-                  {row.getVisibleCells().map(cell => {
+                  {headerGroup.headers.map(header => {
                     return (
-                      <td
-                        key={cell.id}
-                        style={{
-                          display: 'flex',
-                          width: cell.column.getSize(),
-                        }}
+                      <TableHead
+                        key={header.id}
+                        className='flex'
+                        style={{ width: header.getSize() }}
                       >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                      </TableHead>
                     );
                   })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody
+              className='grid relative'
+              style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
+            >
+              {rowVirtualizer.getVirtualItems().map(virtualRow => {
+                const row = rows[virtualRow.index] as Row<Person>;
+                return (
+                  <TableRow
+                    data-index={virtualRow.index} //needed for dynamic row height measurement
+                    ref={node => rowVirtualizer.measureElement(node)} //measure dynamic row height
+                    key={row.id}
+                    className='flex absolute w-full'
+                    style={{ transform: `translateY(${virtualRow.start}px)` }}
+                  >
+                    {row.getVisibleCells().map(cell => {
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          className='flex'
+                          style={{ width: cell.column.getSize() }}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </table>
+        </div>
+        {isFetching && <div>Fetching More...</div>}
       </div>
-      {isFetching && <div>Fetching More...</div>}
     </div>
   );
-}
-
-
-
-const queryClient = new QueryClient();
-
-export default function UsersTable() {
-  return <QueryClientProvider client={queryClient}>
-    <App />
-  </QueryClientProvider>;
 }
