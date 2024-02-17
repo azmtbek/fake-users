@@ -19,10 +19,11 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 
 import { fetchData, Person, PersonApiResponse } from './data-maker';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { FormState } from './page';
 
-const fetchSize = 50;
+const fetchSize = 20;
 
-export default function UsersTable() {
+export default function UsersTable({ formState }: { formState: FormState; }) {
   //we need a reference to the scrolling element for logic down below
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -45,11 +46,12 @@ export default function UsersTable() {
         id: 'fullName',
         cell: info => info.getValue(),
         header: () => <span>Full Name</span>,
+        size: 300,
       },
       {
         accessorKey: 'address',
         header: () => 'Address',
-        size: 300,
+        size: 400,
       },
       {
         accessorKey: 'phone',
@@ -66,10 +68,11 @@ export default function UsersTable() {
       queryKey: [
         'people',
         sorting, //refetch when sorting changes
+        formState,
       ],
       queryFn: async ({ pageParam = 0 }) => {
         const start = (pageParam as number) * fetchSize;
-        const fetchedData = await fetchData(start, fetchSize, sorting); //pretend api call
+        const fetchedData = await fetchData(start, fetchSize, formState); //pretend api call
         return fetchedData;
       },
       initialPageParam: 0,
@@ -114,6 +117,7 @@ export default function UsersTable() {
     columns,
     state: {
       sorting,
+      // formState
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -122,8 +126,8 @@ export default function UsersTable() {
   });
 
   //scroll to top of table when sorting changes
-  const handleSortingChange: OnChangeFn<SortingState> = updater => {
-    setSorting(updater);
+  const handleSortingChange: OnChangeFn<SortingState> = _updater => {
+    // setSorting(updater);
     if (!!table.getRowModel().rows.length) {
       rowVirtualizer.scrollToIndex?.(0);
     }
@@ -139,7 +143,7 @@ export default function UsersTable() {
 
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
-    estimateSize: () => 33, //estimate row height for accurate scrollbar dragging
+    estimateSize: () => 33,
     getScrollElement: () => tableContainerRef.current,
     //measure dynamic row height, except in firefox because it measures table border height incorrectly
     measureElement:
@@ -156,8 +160,8 @@ export default function UsersTable() {
 
   return (
     <div className="w-full">
-      ({flatData.length} of {totalDBRowCount} rows fetched)
-      <div className="flex items-center py-4 gap-3">
+      ({flatData.length} of {totalDBRowCount.toLocaleString()} rows fetched)
+      <div className="flex flex-col items-center py-4 gap-3">
         <div
           className="rounded-md border w-full"
           onScroll={e => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
@@ -216,7 +220,7 @@ export default function UsersTable() {
                       return (
                         <TableCell
                           key={cell.id}
-                          className='flex'
+                          className='flex overflow-hidden'
                           style={{ width: cell.column.getSize() }}
                         >
                           {flexRender(
