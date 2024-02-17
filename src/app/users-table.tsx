@@ -90,7 +90,7 @@ export default function UsersTable({ formState }: { formState: FormState; }) {
       setData(flat);
       return flat;
     },
-    [data]
+    [data, setData]
   );
   const totalDBRowCount = data?.pages?.[0]?.meta?.totalRowCount ?? 0;
   const totalFetched = flatData.length;
