@@ -94,7 +94,6 @@ export default function UsersTable({ formState }: { formState: FormState; }) {
     (containerRefElement?: HTMLDivElement | null) => {
       if (containerRefElement) {
         const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
-        //once the user has scrolled within 500px of the bottom of the table, fetch more data if we can
         if (
           scrollHeight - scrollTop - clientHeight < 500 &&
           !isFetching &&
@@ -107,7 +106,6 @@ export default function UsersTable({ formState }: { formState: FormState; }) {
     [fetchNextPage, isFetching, totalFetched, totalDBRowCount]
   );
 
-  //a check on mount and after a fetch to see if the table is already scrolled to the bottom and immediately needs to fetch more data
   React.useEffect(() => {
     fetchMoreOnBottomReached(tableContainerRef.current);
   }, [fetchMoreOnBottomReached]);
@@ -117,7 +115,6 @@ export default function UsersTable({ formState }: { formState: FormState; }) {
     columns,
     state: {
       sorting,
-      // formState
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
