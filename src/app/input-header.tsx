@@ -10,6 +10,8 @@ import { Action, FormState } from './page';
 import { SLIDER_MAX_VALUE, INPUT_MAX_VALUE } from './consts';
 import { debounce } from 'lodash';
 import { generatePureRandRandomizer } from './data-maker';
+import { CSVLink } from "react-csv";
+import { useDataStore } from '@/lib/store';
 
 interface InputProps {
   dispatch: Dispatch<Action>;
@@ -22,21 +24,26 @@ export default function InputHeader({ dispatch, state }: InputProps) {
   const [inputError, setInputError] = useState('');
   const handleErrorInput = (event: ChangeEvent<HTMLInputElement>) => {
     let val = event.target.value;
-    console.log(val);
-    const num = +val;
+    let num = +val;
+    console.log('cons', num, val);
     if (!isNaN(num)) {
-      val = '' + Math.min(INPUT_MAX_VALUE, num);
-      dispatch({ type: 'SET_ERROR', payload: val });
+      // val = '' + Math.min(INPUT_MAX_VALUE, +num);
+      if (INPUT_MAX_VALUE < num) { num = INPUT_MAX_VALUE; val = '' + num; };
+      dispatch({ type: 'SET_ERROR', payload: num });
+      setInputError(val);
     } else {
       setInputError(val.slice(0, val.length - 1));
     }
+  };
+  const handleErrorSlider = (value: number[]) => {
+    setInputError('' + value[0]);
+    dispatch({ type: 'SET_ERROR', payload: value[0] });
   };
 
 
   const [seed, setSeed] = useState('');
   const handleSeed = (event: ChangeEvent<HTMLInputElement>) => {
     const val = event.target.value;
-    console.log(val);
     const num = +val;
     if (!isNaN(num)) {
       setSeed(val);
@@ -52,7 +59,7 @@ export default function InputHeader({ dispatch, state }: InputProps) {
     dispatch({ type: 'SET_SEED', payload: rand });
   };
 
-
+  const data = useDataStore(state => state.data);
   return (
     <div className='flex w-full justify-between items-center pb-5'>
       <div className='flex items-center gap-3'>
@@ -79,9 +86,10 @@ export default function InputHeader({ dispatch, state }: InputProps) {
           value={[state.errorSlider]}
           max={SLIDER_MAX_VALUE} step={1}
           defaultValue={[0]}
-          onValueChange={(value) => dispatch({ type: 'SET_ERROR', payload: value[0] })} />
-        <Input className='w-20' type='text' max={'1000'}
-          value={state.errorInput}
+          onValueChange={handleErrorSlider} />
+        <Input className='w-20'
+          type='text'
+          value={inputError}
           // defaultValue={''}
           onChange={handleErrorInput}
         />
@@ -96,7 +104,7 @@ export default function InputHeader({ dispatch, state }: InputProps) {
         <Button variant={'ghost'} onClick={shuffleSeedRandomizer}><ShuffleIcon /></Button>
       </div>
       <div className='flex items-center gap-3'>
-        <Button> Export</Button>
+        <CSVLink data={data} filename='data.csv'> <Button>Export</Button></CSVLink>
       </div>
     </div>
   );

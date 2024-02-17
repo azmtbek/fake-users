@@ -1,5 +1,5 @@
 import { Faker, Randomizer } from "@faker-js/faker";
-import { ENGLISH_CHARS, INPUT_MAX_VALUE, POLISH_CHARS, REGIONS, SPANISH_CHARS } from "./consts";
+import { ENGLISH_CHARS, INPUT_MAX_VALUE, JAPANESE_CHARS, POLISH_CHARS, REGIONS, SPANISH_CHARS } from "./consts";
 import { Person } from "./data-maker";
 
 const times = (n: number, faker: Faker, region: string, fn: (data: string, faker: Faker, region: string, isNumber?: boolean) => string) => {
@@ -40,6 +40,9 @@ const getRandomChar = (random: number, region: string) => {
     case REGIONS.ES:
       chars = SPANISH_CHARS;
       break;
+    case REGIONS.JA:
+      chars = JAPANESE_CHARS;
+      break;
     default:
       chars = ENGLISH_CHARS;
       break;
@@ -75,7 +78,6 @@ const makeError = (data: string, faker: Faker, region: string, isNumber?: boolea
     default:
       break;
   }
-  console.log('this is the error', randomErrorType, data, init);
   return data;
 };
 

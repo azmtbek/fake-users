@@ -6,11 +6,10 @@ import {
   fakerJA
 } from '@faker-js/faker';
 import { FormState } from './page';
-import { INPUT_MAX_VALUE, REGIONS } from './consts';
+import { REGIONS, DATA_SIZE } from './consts';
 import { RandomGenerator, xoroshiro128plus } from 'pure-rand';
 import { errorMaker } from './error-maker';
 
-const DATA_SIZE = 20;
 
 export type Person = {
   id: number;

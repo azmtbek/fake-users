@@ -20,6 +20,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { fetchData, Person, PersonApiResponse } from './data-maker';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { FormState } from './page';
+import { useDataStore } from '@/lib/store';
 
 const fetchSize = 20;
 
@@ -81,9 +82,14 @@ export default function UsersTable({ formState }: { formState: FormState; }) {
       placeholderData: keepPreviousData,
     });
 
+  const setData = useDataStore(state => state.setData);
   //flatten the array of arrays from the useInfiniteQuery hook
   const flatData = React.useMemo(
-    () => data?.pages?.flatMap(page => page.data) ?? [],
+    () => {
+      const flat = data?.pages?.flatMap(page => page.data) ?? [];
+      setData(flat);
+      return flat;
+    },
     [data]
   );
   const totalDBRowCount = data?.pages?.[0]?.meta?.totalRowCount ?? 0;

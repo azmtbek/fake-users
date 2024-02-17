@@ -26,14 +26,17 @@
     "next-themes": "^0.2.1",
     "pure-rand": "^6.0.4",
     "react": "^18",
+    "react-csv": "^2.2.2",
     "react-dom": "^18",
     "tailwind-merge": "^2.2.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zustand": "^4.5.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.202",
     "@types/node": "^20",
     "@types/react": "^18",
+    "@types/react-csv": "^1.1.10",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
