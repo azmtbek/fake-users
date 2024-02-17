@@ -8,7 +8,6 @@ import { ShuffleIcon } from '@radix-ui/react-icons';
 import React, { ChangeEvent, Dispatch, useState, } from 'react';
 import { Action, FormState } from './page';
 import { SLIDER_MAX_VALUE, INPUT_MAX_VALUE } from './consts';
-import { debounce } from 'lodash';
 import { generatePureRandRandomizer } from './data-maker';
 import { CSVLink } from "react-csv";
 import { useDataStore } from '@/lib/store';
@@ -25,9 +24,7 @@ export default function InputHeader({ dispatch, state }: InputProps) {
   const handleErrorInput = (event: ChangeEvent<HTMLInputElement>) => {
     let val = event.target.value;
     let num = +val;
-    console.log('cons', num, val);
     if (!isNaN(num)) {
-      // val = '' + Math.min(INPUT_MAX_VALUE, +num);
       if (INPUT_MAX_VALUE < num) { num = INPUT_MAX_VALUE; val = '' + num; };
       dispatch({ type: 'SET_ERROR', payload: num });
       setInputError(val);

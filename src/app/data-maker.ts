@@ -122,7 +122,8 @@ export const fetchData = async (
   const gen = new DataGenerator(formState);
   const dbData = [...gen.getData()];
 
-  await new Promise(resolve => setTimeout(resolve, 0));
+  // to show that is fetching chunks of data
+  await new Promise(resolve => setTimeout(resolve, 250));
 
   return {
     data: dbData.slice(start, start + size),

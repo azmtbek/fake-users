@@ -163,7 +163,7 @@ export default function UsersTable({ formState }: { formState: FormState; }) {
 
   return (
     <div className="w-full">
-      ({flatData.length} of {totalDBRowCount.toLocaleString()} rows fetched)
+      ({flatData.length} rows fetched )
       <div className="flex flex-col items-center py-4 gap-3">
         <div
           className="rounded-md border w-full"
@@ -172,7 +172,7 @@ export default function UsersTable({ formState }: { formState: FormState; }) {
           style={{
             overflow: 'auto', //our scrollable table container
             position: 'relative', //needed for sticky header
-            height: '600px', //should be a fixed height
+            height: '700px', //should be a fixed height
           }}
         >
           <table
